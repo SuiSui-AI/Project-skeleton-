@@ -8,7 +8,7 @@ app.use(express.json());
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const REDIRECT_URI = process.env.REDIRECT_URI; // e.g. https://your-app.onrender.com/oauth2/callback
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const LIVE_CHAT_ID = process.env.LIVE_CHAT_ID; // fill after /livechatid step
 const BOT_NAME = process.env.BOT_NAME || "Sui Sui";
 const TRIGGERS = (process.env.TRIGGERS || "!sui,!suisui,!hello sui sui")
