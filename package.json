@@ -1,15 +1,15 @@
 {
-  "name": "sui-sui-youtube-bot",
+  "name": "google-oauth-youtube",
   "version": "1.0.0",
-  "type": "module",
+  "description": "Google OAuth with YouTube API on Render",
   "main": "index.js",
-  "license": "MIT",
+  "type": "module",
   "scripts": {
     "start": "node index.js"
   },
   "dependencies": {
-    "express": "^4.19.2",
-    "googleapis": "^131.0.0"
-  },
-  "engines": { "node": ">=18" }
+    "express": "^4.18.2",
+    "express-session": "^1.17.3",
+    "googleapis": "^133.0.0"
+  }
 }
