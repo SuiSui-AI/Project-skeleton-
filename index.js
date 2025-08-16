@@ -2,39 +2,41 @@ import express from "express";
 import { google } from "googleapis";
 
 const app = express();
-app.use(express.json());
 
-// ====== ENV ======
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
-const REDIRECT_URI = process.env.REDIRECT_URI; // e.g. https://your-app.onrender.com/oauth2/callback
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-const LIVE_CHAT_ID = process.env.LIVE_CHAT_ID; // fill after /livechatid step
-const BOT_NAME = process.env.BOT_NAME || "Sui Sui";
-const TRIGGERS = (process.env.TRIGGERS || "!sui,!suisui,!hello sui sui")
-  .split(",").map(s=>s.trim().toLowerCase());
+const REDIRECT_URI = process.env.REDIRECT_URI;
 
-const oauth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
+const oauth2Client = new google.auth.OAuth2(
+  CLIENT_ID,
+  CLIENT_SECRET,
+  REDIRECT_URI
+);
 
-let REFRESH_TOKEN = process.env.REFRESH_TOKEN || null;
-let lastRespondedMessageId = null; // in-memory dedupe
+// Step 1: Login route
+app.get("/auth/google", (req, res) => {
+  const url = oauth2Client.generateAuthUrl({
+    access_type: "offline",
+    scope: ["https://www.googleapis.com/auth/youtube.readonly"],
+  });
+  res.redirect(url);
+});
 
-function setRefreshToken(rt){
-  REFRESH_TOKEN = rt;
-  process.env.REFRESH_TOKEN = rt; // for current session
-}
+// Step 2: Callback route
+app.get("/oauth2callback", async (req, res) => {
+  const code = req.query.code;
+  try {
+    const { tokens } = await oauth2Client.getToken(code);
+    oauth2Client.setCredentials(tokens);
 
-function authClient(){
-  if(!CLIENT_ID || !CLIENT_SECRET || !REDIRECT_URI) throw new Error("Missing OAuth env: CLIENT_ID/CLIENT_SECRET/REDIRECT_URI");
-  if(!REFRESH_TOKEN) throw new Error("Missing REFRESH_TOKEN. Open /auth, complete consent, then paste token in env.");
-  oauth2Client.setCredentials({ refresh_token: REFRESH_TOKEN });
-  return google.youtube({ version: "v3", auth: oauth2Client });
-}
+    res.send("✅ Login successful, tokens saved! Now go back to app.");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Auth error");
+  }
+});
 
-app.get("/", (_, res)=>res.send("Sui Sui bot server running. Use /auth, /oauth2/callback, /livechatid, /run"));
-
-// 1) Start OAuth: open this URL in browser
-app.get("/auth", (req, res)=>{
+app.listen(10000, () => console.log("Server running on 10000"));app.get("/auth", (req, res)=>{
   const scopes = [
     "https://www.googleapis.com/auth/youtube.force-ssl",
     "https://www.googleapis.com/auth/youtube.readonly",
