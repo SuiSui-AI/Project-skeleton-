@@ -12,7 +12,7 @@ app.use(
     saveUninitialized: true,
   })
 );
-
+console.log("CLIENT ID:", process.env.GOOGLE_CLIENT_ID);
 // ---------- GOOGLE OAUTH SETUP ----------
 const oauth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_CLIENT_ID,     // Render me env var set karo
