@@ -96,7 +96,7 @@ async function openAiReply(contextMsgs, toUser, rawText){
 app.post("/run", async (req, res)=>{
   try{
     if(!LIVE_CHAT_ID) throw new Error("Set LIVE_CHAT_ID env (see /livechatid)");
-    if(!OPENAI_API_KEY) throw new Error("Missing OPENAI_API_KEY env");
+    if(!GEMINI_API_KEY) throw new Error("Missing GEMINI_API_KEY env");
 
     const yt = authClient();
 
@@ -122,7 +122,7 @@ app.post("/run", async (req, res)=>{
       context.push({ who: it.authorDetails.displayName, text: it.snippet.displayMessage });
     }
 
-    const reply = await openAiReply(context, cmd.authorDetails.displayName, cmd.snippet.displayMessage);
+    const reply = await geminiAiReply(context, cmd.authorDetails.displayName, cmd.snippet.displayMessage);
     if(!reply) return res.status(500).json({error:"openai-empty-reply"});
 
     await yt.liveChatMessages.insert({
@@ -143,5 +143,5 @@ app.post("/run", async (req, res)=>{
   }
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 10000;
 app.listen(PORT, ()=> console.log("Sui Sui server on :"+PORT));
